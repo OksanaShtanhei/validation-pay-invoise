@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation</title>
+    <style>
+        .container{
+            width: 20vw;
+            margin: 0 3%;
+        }
+        .header{
+            background: rgb(133, 167, 179);
+            padding: 15px;
+            color: white;
+            text-align: center;
+        }
+        .form{
+            position: relative;
+            display: grid;
+            grid-gap: 2vh;
+            margin: 2vh 0;
+        }
+        .input-container{
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+        }
+        label{
+            color: rgb(108, 155, 170);
+        }
+        .input-container input{
+            padding: 1vh 1vw;
+            width: 18vw;
+        }
+        .input-container-two{
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .input-container-two input{
+            width: 7.8vw;
+        }
+        p{
+            color: red;
+            margin: 0;
+            padding: 0;
+        }
+        button{
+            width: 20vw;
+            padding: 1vh 1vw;
+            background: rgb(108, 155, 170);
+            color: white;
+            letter-spacing: 2px;
+        }
+        .modal{
+            position: absolute;
+            width: 20vw;
+            height: 0;
+            color: white;
+            text-align: center;
+            top: 1vh;
+            left: 25vw;
+            font-size: xx-large;
+            line-height: 100vh;
+            transition: height 2s;
+        }
+        .succes{
+            height: 95vh;
+            background: rgb(88, 167, 108);
+        }
+        .tryagain{
+            height: 95vh;
+            background: rgb(167, 68, 68);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h2>Pay Invoise</h2>
+        </header>
+        <form action="/" class="form" method="GET">
+        </form>
+        <button type="submit" class="btn" >Submit</button>
+        <div class="modal"></div>
+    </div>
+
+    <script>
+        const btn = document.querySelector('.btn')
+        const form = document.querySelector('.form')
+        const modal = document.querySelector('.modal')
+
+        let elements = [
+            {index: 0, label: 'Amount', name: 'amount', value: '', error: ''},
+            {index: 1, label: 'Name on card', name: 'name', value: '', error: ''},
+            {index: 2, label: 'Number of card', name: 'number', value: '', error: ''},
+            {index: 3, label: 'Expiry date', name: 'date', placeholder: '00/0000', value: '', error: ''},
+            {index: 4, label: 'Code', name: 'code', maxlength: '3', value: '', error: ''},
+            {index: 5, label: 'Zip/Postal code', name: 'zip', value: '', error: ''}
+        ]
+   
+        window.addEventListener('DOMContentLoaded', () =>{
+           displayItems(elements)
+           getInputs()
+        })
+
+        function displayItems(elements){
+            let items = []
+            elements.map(el => {
+                items.push(`<div class="input-container">
+                                <label for=${el.name} 
+                                       class=${el.name}>${el.label}</label>
+                                <input id=${el.name} 
+                                       maxlength=${el.maxlength ? el.maxlength : ''}
+                                       placeholder=${el.placeholder ? el.placeholder : ''} 
+                                       ></input>
+                            </div>`)
+            })
+            form.innerHTML = items.join('')  
+        }  
+
+        function getInputs(){
+            const allInputs = document.querySelectorAll('input')
+
+            allInputs.forEach( (inp, index) => {
+                if(inp.value == ''){
+                    elements[index].error = '<p>Empty field!</p>'
+                    elements[index].label = elements[index].error
+                } 
+               inp.addEventListener('change', (e) => {
+                    modal.classList.remove('success')
+                    modal.classList.remove('tryagain')
+                    switch(inp.id){
+                        case 'amount': 
+                            const regex0 = /^\d*$/
+                            if(regex0.test(inp.value)){
+                                elements[0].value = inp.value.trim()
+                                elements[0].label = 'Amount'
+                                elements[0].error = ''
+                            } else {
+                                elements[0].error = '<p>Only digits!</p>'
+                                elements[0].label =  elements[0].error
+                                elements[0].value = ''
+                            } 
+                            break;
+                        case 'name':
+                            const regex1 = /[A-Za-z]+\s[A-Za-z]+/
+                            if(regex1.test(inp.value)){
+                                elements[1].value = inp.value.trim()
+                                elements[1].label = 'Name on card'
+                                elements[1].error = ''
+                            } else{
+                                elements[1].error = '<p>Enter the name on card!</p>'
+                                elements[1].label =  elements[1].error 
+                                elements[1].value = ''
+                            }
+                            break; 
+                        case 'number':
+                            const regex2 = /^\d{16}$/
+                            if(regex2.test(inp.value)){
+                                elements[2].value = inp.value.trim()
+                                elements[2].label = 'Number of card'
+                                elements[2].error = ''
+                            } else {
+                                elements[2].error = '<p>Enter 16 digits!</p>'
+                                elements[2].label =  elements[2].error 
+                                elements[2].value = ''
+                            }
+                            break; 
+                        case 'date':
+                            const regex3 = /\d{2}\/\d{4}/
+                            if(regex3.test(inp.value)){
+                                elements[3].value = inp.value.trim()
+                                elements[3].label = 'Expiry date'
+                                elements[3].error = ''
+                            } else {
+                                elements[3].error = '<p>Enter date!</p>'
+                                elements[3].label =  elements[3].error 
+                                elements[3].value = ''
+                            }
+                            break;
+                        case 'code':
+                            const regex4 = /^[A-Za-z0-9]+$/
+                            if(regex4.test(inp.value)){
+                                elements[4].value = inp.value.trim()
+                                elements[4].label = 'Code'
+                                elements[4].error = ''
+                            } else {
+                                elements[4].error = '<p>Enter 3 symbols!</p>'
+                                elements[4].label =  elements[4].error 
+                                elements[4].value = ''
+                            }
+                            break; 
+                        case 'zip':
+                            const regex5 = /^\d*$/
+                            if(regex5.test(inp.value)){
+                                elements[5].value = inp.value.trim()
+                                elements[5].label = 'Zip/Postal code'
+                                elements[5].error = ''
+                            } else {
+                                elements[5].error = '<p>Enter postal code!</p>'
+                                elements[5].label =  elements[5].error 
+                                elements[5].value = ''
+                            }
+                            break;
+                    }
+                    console.log(elements) 
+               })
+            })
+        }
+    btn.addEventListener('click', (e) => {
+        e.preventDefault()
+        const errors = []
+        elements.map(el => {
+            if(el.error !== ''){
+                errors.push(el.error)
+            } 
+        })
+        displayItems(elements)
+        getInputs()
+        checkElems(errors)
+    })
+     
+    function checkElems(arr){
+        if(arr.length > 0){
+            modal.innerHTML = 'Try again'
+            modal.classList.remove('success')
+            modal.classList.add('tryagain')
+        } else {
+            modal.innerHTML = 'Success'
+            modal.classList.remove('tryagain')
+            modal.classList.add('succes')
+        }
+    }
+        
+    </script>
+</body>
+</html>
